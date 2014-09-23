@@ -238,14 +238,9 @@ vicious.register(mem_graph, vicious.widgets.mem, "$1", 2)
 --batwidget = wibox.widget.textbox()
 --vicious.register(batwidget, vicious.widgets.bat, "$2% ", 31, "BAT0")
 
---temp_icon = wibox.widget.imagebox()
---temp_icon:set_image("/home/nlare/.config/awesome/themes/nlare/icons/hardware/temp.xbm")
 --*:draw - need to set cairo context, to do this, we must install oocairo lib (sources need latest patch) or no?
 --net_icon= wibox.widget.imagebox()
 --net_icon:set_image("/home/nlare/.config/awesome/themes/nlare/icons/hardware/net-wired2.xbm")
-
---mus_icon= wibox.widget.imagebox()
---mus_icon:set_image("/home/nlare/.config/awesome/themes/nlare/icons/hardware/mpd.xbm")
 
 --mygmailimg = widget({ type = "imagebox" })
 --mygmailimg.image = image("/home/username/.config/awesome/gmail.png")
