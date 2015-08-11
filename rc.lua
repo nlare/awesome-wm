@@ -131,8 +131,11 @@ myaudiomenu = {
 
 mygamesmenu = {
     {"xboard(chess)", "xboard" },
+    {"Doom3 BFG Edition", "/home/nlare/data/games/Doom_3_BFG_Edition/RBDoom3BFG.x64" },
+    {"NWN", "sh /home/nlare/data/games/NeverwinterNights/nwn" },
     {"Diablo II (window)", "sh /home/nlare/data/_scripts/games/run_diablo_windowed.sh" },
     {"Diablo II (fullscr)", "sh /home/nlare/data/_scripts/games/run_diablo_fullscreen.sh" },
+    {"Quake3", "\"/home/nlare/data/games/Quake 3 Arena/quake3\"" },
     {"winecfg", "winecfg" }
 }
 
@@ -146,7 +149,7 @@ myvmmenu = {
 }
 
 mydevmenu = {
-    { "sublime_commander", "subl" },
+    { "sublime_commander", "subl3" },
     { "netbeans", "netbeans" },
     { "sqldev", "/home/nlare/_dstr/oracle/sqldeveloper/sqldeveloper.sh" },
     { "maple", "/home/nlare/maple16/bin/xmaple" },
@@ -162,7 +165,13 @@ mymainmenu = awful.menu({ items = { { "awesome", myawesomemenu, beautiful.awesom
 --                                    { "recordmydesktop", "gtk-recordMyDesktop" },
 --                                    { "gtypist", terminal .. " -e gtypist" },
 --                                    { "gnote", "gnote" },
+                                    { "TkDVD", "sh /home/nlare/data/_dstr/tkdvd/TkDVD.sh" },
+                                    { "xpaint", "/usr/bin/xpaint" },
+                                    { "7zFM", "/usr/bin/7zFM" },
+                                    { "ink level (Epson)", "/home/nlare/_scripts/epson_ink_level.sh" },
+                                    { "ncdu (Disk Analyzer)", "urxvt -e ncdu" },
                                     { "vim.tutorial", "feh /home/nlare/_img/vim_keys.jpg" },
+                                    { "mc.filetypes", "gvim /home/nlare/.config/mc/mc.ext" },
 --                                    { "blink(alt.skype)", "blink" },
 --                                    { "ati_config", "driconf" },
                                     { "open terminal", terminal }
@@ -181,8 +190,12 @@ menubar.utils.terminal = terminal -- Set the terminal for applications that requ
 mytextclock = awful.widget.textclock()
 
 --calendar.addCalendarToWidget(mytextclock, "<span color='green'>%s</span>")
---cpufreq = wibox.widget.textbox()
---vicious.register(cpufreq, vicious.widgets.cpufreq, '<span background="#ffffff" font="Terminus 14"> <span font="Terminus 9" color="#000000">$1Hz</span></span>', 4, {"corefreq.1", "core"})
+cpufreq_label = wibox.widget.textbox()
+cpufreq_label:set_markup("FREQ:")
+cpufreq_label:set_font("Terminus 8")
+
+cpufreq = wibox.widget.textbox()
+vicious.register(cpufreq, vicious.widgets.cpufreq, '$1', 4, "cpu0")
 
 --cores_graph_conf = {height = 18, width = 8, rounded_size = 0.3}
 cpu_graph = blingbling.line_graph()
@@ -248,15 +261,15 @@ vicious.register(mem_graph, vicious.widgets.mem, "$1", 2)
 gmaillabel= wibox.widget.textbox()
 gmaillabel:set_markup(" inbox: ")
 
-gmail = wibox.widget.textbox()
+--gmail = wibox.widget.textbox()
 --gmail_t = awful.tooltip({ objects = { gmail },})
 
-vicious.register(gmail, vicious.widgets.gmail,
-                function (widget, args)
+-- vicious.register(gmail, vicious.widgets.gmail,
+                -- function (widget, args)
                     --gmail_t:set_text(args["{subject}"])
                     --gmail_t:add_to_object(mygmailimg)
-                    return args["{count}"]
-                 end, 120) 
+                 --    return args["{count}"]
+                 -- end, 120) 
                  --the '120' here means check every 2 minutes.
 
 -- Pacman Widget
@@ -306,7 +319,7 @@ for i=1,2 do
     coretemp[i]:set_label("·$percent°")
     coretemp[i]:set_width(32)
 
-    vicious.register(coretemp[i], vicious.widgets.thermal, "$1",10 ,{"coretemp.0", "core", i*2})
+    vicious.register(coretemp[i], vicious.widgets.thermal, "$1",10 ,{"coretemp.0/hwmon/hwmon0", "core", i*2})
 --    end
 end
 
@@ -340,7 +353,7 @@ function update_ws()
     return { awful.util.pread(os.getenv("HOME") .. '/_scripts/write_stat.sh')}
 end
 
-vicious.register(write_stat, update_ws, "$1",10)
+vicious.register(write_stat, update_ws, "$1", 10)
 
 read_stat = blingbling.value_text_box()
 read_stat:set_text_background_color("#ffffff33")
@@ -354,7 +367,7 @@ function update_rs()
     return { awful.util.pread(os.getenv("HOME") .. '/_scripts/read_stat.sh')}
 end
 
-vicious.register(read_stat, update_rs, "$1",10)
+vicious.register(read_stat, update_rs, "$1", 10)
 
 hddtemp = blingbling.value_text_box()
 hddtemp:set_text_background_color("#ffffff33")
@@ -365,6 +378,71 @@ hddtemp:set_label("HDD:$percent°")
 hddtemp:set_width(40)
 
 vicious.register(hddtemp, vicious.widgets.hddtemp, '${/dev/sda}', 19)
+
+--ups_label = wibox.widget.textbox()
+--ups_label:set_markup(" UPS: ")
+--ups_label:set_font("Terminus 8") 
+
+--ups_stat = wibox.widget.textbox()
+--ups_stat:set_font("Terminus 8") 
+
+--function update_ups_status()
+--	return { awful.util.pread(os.getenv("HOME") .. '/_scripts/apc/read_status.sh')}
+--end
+
+--vicious.register(ups_stat, update_ups_status, "$1", 10)
+
+--ups_input_voltage = blingbling.value_text_box()
+--ups_input_voltage:set_text_background_color("#ffffff33")
+--ups_input_voltage:set_font("Terminus")
+--ups_input_voltage:set_font_size(12)
+--ups_input_voltage:set_label("IN:$percent")
+--ups_input_voltage:set_width(55)
+
+--function update_ups_input_voltage()
+--	return { awful.util.pread(os.getenv("HOME") .. '/_scripts/apc/read_linev.sh') }
+--end
+
+--vicious.register(ups_input_voltage, update_ups_input_voltage, "$1", 10)
+
+--ups_output_voltage = blingbling.value_text_box()
+--ups_output_voltage:set_text_background_color("#ffffff33")
+--ups_output_voltage:set_font("Terminus")
+--ups_output_voltage:set_font_size(12)
+--ups_output_voltage:set_label("OUT:$percent")
+--ups_output_voltage:set_width(60)
+
+--function update_ups_output_voltage()
+--	return { awful.util.pread(os.getenv("HOME") .. '/_scripts/apc/read_outputv.sh')}
+--end
+
+--vicious.register(ups_output_voltage, update_ups_output_voltage, "$1", 9)
+
+--ups_load = blingbling.value_text_box()
+--ups_load:set_text_background_color("#ffffff33")
+--ups_load:set_font("Terminus")
+--ups_load:set_font_size(12)
+--ups_load:set_label("LOAD:$percentW")
+--ups_load:set_width(75)
+
+--function update_ups_load()
+--	return { awful.util.pread(os.getenv("HOME") .. '/_scripts/apc/read_load.sh')}
+--end
+
+--vicious.register(ups_load, update_ups_load, "$1", 10)
+
+--ups_temp = blingbling.value_text_box()
+--ups_temp:set_text_background_color("#ffffff33")
+--ups_temp:set_font("Terminus")
+--ups_temp:set_font_size(12)
+--ups_temp:set_label("TEMP:$percent°")
+--ups_temp:set_width(65)
+
+--function update_ups_temp()
+--	return { awful.util.pread(os.getenv("HOME") .. '/_scripts/apc/read_temp.sh')}
+--end
+
+--vicious.register(ups_temp, update_ups_temp, "$1", 11)
 
 space_usage = wibox.widget.textbox()
 space_usage:set_markup(" SPACE::")
@@ -409,54 +487,76 @@ udisks_glue:set_Usb_icon(beautiful.usb_icon)
 udisks_glue:set_Cdrom_icon(beautiful.cdrom_icon)
 
 netlabel = wibox.widget.textbox()
-netlabel:set_markup("NET::")
+netlabel:set_markup(" NET::")
 netlabel:set_font("Terminus 8")
 
-lan_ip = blingbling.value_text_box()
-lan_ip:set_text_background_color("#ffffff33")
-lan_ip:set_font("Terminus")
-lan_ip:set_font_size(12)
-lan_ip:set_label("$percent")
-lan_ip:set_width(150)
+wan_ip = wibox.widget.textbox()
+wan_ip:set_font("Terminus 8")
+
+function update_wan_ip()
+    return { awful.util.pread(os.getenv("HOME") .. '/_scripts/wan_ip.sh')}
+end
+
+--vicious.register(wan_ip, update_wan_ip, "$1", 30)
+
 
 function update_lanip()
-	local F,S,IP
+	--local s = socket.udp()
+	--s:setpeername("192.168.0.102", 80)
+	--local ip = s:getsockname()
+	--STR = tostring(ip)
+	
+	SYS_COMMAND = io.popen("/usr/bin/hostname -i");
+	
+	STR = SYS_COMMAND:read("*all")
 
-	 F = io.popen('/home/nlare/_scripts/lan_ip.sh')
-	 S = F:read("*all")
---	 IP = S:match('(%d*.%d*.%d*.%d*)')
-	 IP = tostring(IP)
-
-	 F:close()
-
-	 if not IP then
-		 return "No IP"
-	 end
-
-	return IP
+	SYS_COMMAND:close()
+	
+	if not STR then
+		return "LAN IP is NULL; "
+	else
+		return STR 
+	end
 end
---function update_lanip()
---	local s = socket.udp()
---	s:setpeername("74.125.115.104", 80)
---	local ip = s:getsockname()
---	return "192%.168%.0%.1"
---end
 
---vicious.register(lan_ip, update_lanip, "$1",1)
+lan_ip_label = wibox.widget.textbox()
+lan_ip_label:set_markup(" LAN_IP:")
+
+lan_ip = wibox.widget.textbox()
+lan_ip:set_font("Terminus 8")
+
+vicious.register(lan_ip, update_lanip, "$1",10)
+
+function update_wan_ip()
+
+	local SYS_COMMAND = io.popen('/home/nlare/_scripts/read-wan-ip.sh')
+
+	STR = SYS_COMMAND:read("*all")
+
+	SYS_COMMAND:close()
+
+	if not STR then
+		return "WAN IP is NULL;"
+	else
+		return STR
+	end
+end
+
+wan_ip_label = wibox.widget.textbox()
+wan_ip_label:set_markup(" WAN_IP:")
+
+wan_ip = wibox.widget.textbox()
+wan_ip:set_font("Terminus 8")
 
 --wan_ip = blingbling.value_text_box()
 --wan_ip:set_text_background_color("#ffffff33")
---hddtemp:set_rounded_size(0.3)
+--wan_ip:set_rounded_size(0.3)
 --wan_ip:set_font("Terminus")
 --wan_ip:set_font_size(12)
 --wan_ip:set_label("wan:$percent")
 --wan_ip:set_width(100)
 
---function update_wip()
---    return { awful.util.pread(os.getenv("HOME") .. '/_scripts/wan_ip.sh')}
---end
-
---vicious.register(wan_ip, update_wip, "$1",10)
+vicious.register(wan_ip, update_wan_ip, "$1",10)
 
 netwidget = blingbling.net({interface = "eno1", show_text = true})
 --netwidget:set_ippopup()
@@ -581,8 +681,8 @@ for s = 1, screen.count() do
     -- Widgets that are aligned to the right
     local right_layout = wibox.layout.fixed.horizontal()
 
-    right_layout:add(gmaillabel)
-    right_layout:add(gmail)
+    -- right_layout:add(gmaillabel)
+    -- right_layout:add(gmail)
     right_layout:add(pacwidget)
 --    right_layout:add(mylb)
     right_layout:add(mytextclock)
@@ -619,6 +719,9 @@ for s = 1, screen.count() do
     --mid_layout:add(memwidget)
 --    left_graph:add(netu)
 --    left_graph:add(netd)
+	
+--	left_graph:add(cpufreq_label)
+--	left_graph:add(cpufreq)
 
     left_graph:add(temps)
 
@@ -634,9 +737,17 @@ for s = 1, screen.count() do
     left_graph:add(home_dir)
     left_graph:add(tmp_dir)
 --    left_graph:add(total_write)
-    left_graph:add(iostatlabel)
-    left_graph:add(write_stat)
-    left_graph:add(read_stat)
+--    left_graph:add(iostatlabel)
+--    left_graph:add(write_stat)
+--    left_graph:add(read_stat)
+--	left_graph:add(ups_label)
+--	left_graph:add(ups_stat)
+--	left_graph:add(ups_input_voltage)
+--	left_graph:add(ups_output_voltage)
+--	left_graph:add(ups_load)
+--	left_graph:add(ups_temp)
+--	left_graph:add(netlabel)
+--	left_graph:add(wan_ip)
 
 	local mid_graph = wibox.layout.fixed.horizontal() 
 
@@ -646,8 +757,12 @@ for s = 1, screen.count() do
 
 --	mid_graph:add(netlabel)
 --	mid_graph:add(mylb)
-    --mid_graph:add(lan_ip)
-    --mid_graph:add(wan_ip)
+  mid_graph:add(lan_ip_label)
+  mid_graph:add(lan_ip)
+  mid_graph:add(wan_ip_label)
+  mid_graph:add(wan_ip)
+
+--    mid_graph:add(wan_ip)
 
     local right_graph = wibox.layout.fixed.horizontal()
 
@@ -728,7 +843,8 @@ globalkeys = awful.util.table.join(
     -- Any actions
 
     awful.key({ modkey,           }, "grave", function () awful.util.spawn_with_shell("urxvt -e canto -u") end),
-    awful.key({ modkey,           }, "m", function () awful.util.spawn_with_shell("sudo umount /media/*") end),
+--    awful.key({ modkey,           }, "m", function () awful.util.spawn_with_shell("sudo umount /media/*") end),i
+    awful.key({ modkey,           }, "m", function () awful.util.spawn_with_shell("devmon --unmount-removable") end),
     awful.key({ modkey,           }, "KP_Subtract", function () awful.util.spawn("amixer sset Master 5-") end),
     awful.key({ modkey,           }, "KP_Add", function () awful.util.spawn("amixer sset Master 5+") end),
     awful.key({                   }, "XF86AudioPlay", function () awful.util.spawn("cmus-remote -u") end),
@@ -742,36 +858,40 @@ globalkeys = awful.util.table.join(
     awful.key({                   }, "XF86AudioLowerVolume", function () awful.util.spawn("pulseaudio-ctl down") end),
     awful.key({                   }, "XF86AudioMute", function () awful.util.spawn("pulseaudio-ctl mute") end),
     awful.key({                   }, "XF86Sleep", function () awful.util.spawn("sudo systemctl suspend") end),
+    awful.key({	"Shift",          }, "XF86Sleep", function () awful.util.spawn("sudo systemctl hibernate") end),
     awful.key({                   }, "XF86Tools", 
     function ()
-         local screen = mouse.screen
-	     local curtag = tags[screen][7]
+--         local screen = mouse.screen
+	     local curtag = tags[2][7]
 		 awful.tag.viewonly(curtag)
          run_once("cmus")
          --.maximized = true
     end),
-    awful.key({ modkey,           }, "p",
+    awful.key({ modkey,           }, "m",
     function () 
-        local curtag = tags[1][7]
+        local curtag = tags[2][7]
         awful.tag.viewonly(curtag)
         awful.util.spawn_with_shell("urxvt -e cmus") 
     end),
-	awful.key({ modkey,           }, "t",
+	awful.key({ modkey,           }, "s",
     function () 
-        local curtag = tags[1][2]
+        local curtag = tags[2][2]
         awful.tag.viewonly(curtag)
-        awful.util.spawn_with_shell("subl") 
+        awful.util.spawn_with_shell("subl3'") 
     end),
     awful.key({ modkey,           }, "b", function () awful.util.spawn("chromium") end),
+    awful.key({ modkey,  "Shift"  }, "b", function () awful.util.spawn("luakit") end),
     awful.key({ modkey,           }, "f", function () awful.util.spawn_with_shell("urxvt -e mc") end),
     awful.key({ modkey,  "Shift"  }, "f", function () awful.util.spawn_with_shell("doublecmd") end),
     awful.key({ modkey,  "Shift"  }, "a", function () awful.util.spawn_with_shell("file-roller") end),
     awful.key({ modkey,           }, "d", function () awful.util.spawn("urxvt -e sdcv") end),
     awful.key({ modkey,           }, "g", function () awful.util.spawn("gvim") end),
-    awful.key({ modkey,  "Shift"  }, "g", function () awful.util.spawn_with_shell("netbeans") end),
+    awful.key({ modkey,  "Shift"  }, "g", function () awful.util.spawn_with_shell("subl3") end),
+    awful.key({ modkey,  		  }, "a", function () awful.util.spawn_with_shell("urxvt -e anamnesis -b") end),
     awful.key({ "Control",        }, "Escape", function () awful.util.spawn("urxvt -e sudo wifi-menu") end),
-    awful.key({ modkey,        }, "i", function () awful.util.spawn("skype") end),
-    awful.key({ modkey,  "Shift"  }, "i", function () awful.util.spawn("utox") end),
+    awful.key({ modkey,   "Shift"     }, "i", function () awful.util.spawn("apulse32 skype") end),
+    awful.key({ modkey,    }, "i", function () awful.util.spawn("utox") end),
+--    awful.key({ modkey,    }, "i", function () awful.util.spawn(terminal .. " -e toxic") end),
         -- Escape from keyboard focus trap (eg Flash plugin in Firefox)
     awful.key({ modkey, "Control" }, "Escape", function ()
          awful.util.spawn("xdotool getactivewindow mousemove --window %1 0 0 click --clearmodifiers 2")
@@ -887,9 +1007,11 @@ awful.rules.rules = {
                      keys = clientkeys,
                      buttons = clientbuttons } },
     { rule = { class = "MPlayer" },
-      properties = { floating = true } },
+      properties = { floating = true }, tag = tags[2][7] },
+	{ rule = { class = "Vlc" },
+      properties = { floating = false }, tag = tags[2][7] }, 
     { rule = { class = "skype" },
-      properties = { floating = true, tag = tags[1][6] } },
+      properties = { floating = true, tag = tags[2][6] } },
 	{ rule = { name = "uTox" },
       properties = { floating = false, tag = tags[1][6] } },
 	{ rule = { name = "Video Preview" },
@@ -902,7 +1024,7 @@ awful.rules.rules = {
       properties = { floating = true } },
     -- Set Firefox to always map on tags number 2 of screen 1.
     { rule = { class = "Chromium" },
-      properties = { floating = true, tag = tags[1][1] } },
+      properties = { floating = false, tag = tags[2][1] } },
 	{ rule = { instance = "exe" },
       properties = { floating = true } },
     { rule = { instance = "plugin-container" },
@@ -918,13 +1040,25 @@ awful.rules.rules = {
     { rule = { class = "Eclipse" },
       properties = { floating = true, tag = tags[1][2]} },
 	{ rule = { class = "Zathura" },
-      properties = { floating = false, tag = tags[1][5]} },
+      properties = { floating = false, tag = tags[1][3]} },
+--	{ rule = { class = "Zathura" },
+--      properties = { floating = false, tag = tags[2][3]} },
+	{ rule = { class = "Gifview" },
+      properties = { floating = true } },
 	{ rule = { class = "lxappearance" },
       properties = { floating = true, tag = tags[1][6]} },
-	{ rule = { class = "file-roller" },
-      properties = { floating = true } },
 	{ rule = { class = "Wine" },
       properties = { floating = true } },
+	{ rule = { class = "nwn" },
+      properties = { floating = false, tag = tags[1][4]} },
+	{ rule = { class = "Conky" },
+      properties = { floating = true,
+	  				 sticky = false,
+				     ontop = false,
+      				 focusable = false } },
+	{ rule = { name = "Save File" },
+      properties = { floating = false } },
+
 }
 -- }}}
 
@@ -1003,12 +1137,18 @@ client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_n
 run_once("devmon")
 run_once("sbxkb")
 run_once("yeahconsole")
-run_once("parcellite")
+run_once("anamnesis --start")
 --run_once("firefox")
 run_once("wmname LG3D")
-run_once("dropboxd")
-run_once("conky -c ~/conky/.conkyrc")
+run_once("dropbox")
+--run_once("conky -c ~/conky/.conkyrc")
 --run_once("udiskie --tray")
-run_once("utox")
+--run_once("utox")
+run_once("/home/nlare/_scripts/hdd_stop.sh /dev/sdb")
+--run_once("~/_scripts/apc/apc_status.sh")
+--run_once("~/_scripts/apc/apc_linev.sh")
+--run_once("~/_scripts/apc/apc_outputv.sh")
+--run_once("~/_scripts/apc/apc_load.sh")
+--run_once("~/_scripts/apc/apc_temp.sh")
 -- run_once("xscreensaver -no-splash")
 -- run_once("xbattbar-acpi -b 1")
