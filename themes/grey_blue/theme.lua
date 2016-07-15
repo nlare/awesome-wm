@@ -4,28 +4,29 @@
 
 theme = {}
 
-theme.font          = "Terminus 8"
+theme.font          = "Cantarell 10"
 
-theme.bg_normal     = "#12121233"
-theme.bg_focus      = "#ffffff44"
-theme.bg_urgent     = "#ecedee"
-theme.bg_minimize   = "#cccccc"
+theme.bg_normal     = "#333333"
+theme.bg_focus      = "#2099d6"--"#535d6c"
+theme.bg_urgent     = "#ff0000"
+theme.bg_minimize   = "#444444"
+theme.bg_systray    = theme.bg_normal
 
-theme.fg_normal     = "#ededee"
+theme.fg_normal     = "#ffffff"
 theme.fg_focus      = "#ffffff"
-theme.fg_urgent     = "#ff0000"
+theme.fg_urgent     = "#ffffff"
 theme.fg_minimize   = "#ffffff"
 
-theme.border_width  = "2.5"
+theme.border_width  = 1
 theme.border_normal = "#000000"
-theme.border_focus  = "#212121"
+theme.border_focus  = "#535d6c"
 theme.border_marked = "#91231c"
-
 
 -- There are other variable sets
 -- overriding the default one when
 -- defined, the sets are:
--- [taglist|tasklist]_[bg|fg]_[focus|urgent]
+-- taglist_[bg|fg]_[focus|urgent|occupied|empty]
+-- tasklist_[bg|fg]_[focus|urgent]
 -- titlebar_[bg|fg]_[normal|focus]
 -- tooltip_[font|opacity|fg_color|bg_color|border_width|border_color]
 -- mouse_finder_[color|timeout|animate_timeout|radius|factor]
@@ -72,7 +73,7 @@ theme.titlebar_maximized_button_focus_inactive  = "/usr/share/awesome/themes/def
 theme.titlebar_maximized_button_normal_active = "/usr/share/awesome/themes/default/titlebar/maximized_normal_active.png"
 theme.titlebar_maximized_button_focus_active  = "/usr/share/awesome/themes/default/titlebar/maximized_focus_active.png"
 
-theme.wallpaper = "/home/nlare/.config/awesome/themes/bw/space.jpg"
+theme.wallpaper = "/usr/share/awesome/themes/default/background.png"
 
 -- You can use your own layout icons like this:
 theme.layout_fairh = "/usr/share/awesome/themes/default/layouts/fairhw.png"
@@ -93,6 +94,59 @@ theme.awesome_icon = "/usr/share/awesome/icons/awesome16.png"
 -- Define the icon theme for application icons. If not set then the icons 
 -- from /usr/share/icons and /usr/share/icons/hicolor will be used.
 theme.icon_theme = nil
+theme.blingbling = {
+    graph_color = theme.bg_focus .."99",
+    graph_line_color = theme.bg_focus
+}
+theme.blingbling.tagslist = {}
+theme.blingbling.tagslist.normal ={-- background_color =
+--widget_background,--rgb(26,26,26),
+                                    text_background_color = "#00000000", --no color
+--                                    rounded_size = { 0, 0.4,0,0.4 },
+--                                    text_color = theme.fg_normal,
+                                    font = "Cantarell",
+                                    font_size = 16 
+                                  }
+theme.blingbling.tagslist.focus = { --h_margin = 1,
+                                    --v_margin = 1,
+                                    --background_color = red, 
+                                    text_background_color = "#00000000",
+                                    --text_color = theme.fg_normal,
+                                    --rounded_size = { 0, 0.4,0,0.4 },
+                                    font = "Cantarell",
+                                    font_size = 16
+                                  }
 
+local cal_common_style = {  h_margin = 0, 
+                            v_margin = 0, 
+                            rounded_size = 0.3, 
+                            background_color = "#00000066", 
+                            text_background_color = "#00000000",
+                            text_color = "#ffffff", 
+                            font ="Cantarell"
+                          }
+theme.blingbling.calendar = {}
+local util = require('awful.util')
+theme.blingbling.calendar.prev_next_widget_style = util.table.clone(cal_common_style)    
+theme.blingbling.calendar.current_date_widget_style = util.table.clone(cal_common_style)
+theme.blingbling.calendar.days_of_week_widget_style = util.table.clone(cal_common_style)
+theme.blingbling.calendar.days_of_month_widget_style = util.table.clone(cal_common_style)
+theme.blingbling.calendar.weeks_number_widget_style = util.table.clone(cal_common_style)
+theme.blingbling.calendar.corner_widget_style = util.table.clone(cal_common_style)
+theme.blingbling.calendar.current_day_widget_style = util.table.clone(cal_common_style)
+theme.blingbling.calendar.focus_widget_style = util.table.clone(cal_common_style)
+theme.blingbling.calendar.info_cell_style = util.table.clone(cal_common_style)
+theme.blingbling.calendar.info_cell_style.background_color = transparent
+theme.blingbling.calendar.current_day_widget_style.background_color = theme.bg_focus 
+theme.blingbling.calendar.current_day_widget_style.text_color = "#000000"
+theme.blingbling.calendar.current_day_widget_style.rounded_size = {0.5,0,0.5,0}
+theme.blingbling.calendar.focus_widget_style.background_color = "#888888"
+theme.blingbling.calendar.focus_widget_style.rounded_size = {0,0.5,0,0.5}
+theme.blingbling.calendar.days_of_week_widget_style.text_color = "#bbbbbb"
+theme.blingbling.calendar.days_of_week_widget_style.background_color ="#00000022"
+theme.blingbling.calendar.corner_widget_style.text_color = "#bbbbbb"
+theme.blingbling.calendar.corner_widget_style.background_color = "#00000022"
+theme.blingbling.calendar.weeks_number_widget_style.text_color = "#bbbbbb" 
+theme.blingbling.calendar.weeks_number_widget_style.background_color = "#00000022" 
 return theme
 -- vim: filetype=lua:expandtab:shiftwidth=4:tabstop=8:softtabstop=4:textwidth=80

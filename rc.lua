@@ -1,4 +1,6 @@
 -- Standard awesome library
+package.path = package.path .. ';/usr/share/awesome/lib/?/init.lua;/usr/share/awesome/lib/?.lua'
+
 local gears = require("gears")
 local awful = require("awful")
 awful.rules = require("awful.rules")
@@ -94,7 +96,7 @@ local layouts =
 -- }}}
 
 -- {{{ Wallpaper
-wallpaper =  os.getenv("HOME") .. "/.config/awesome/themes/bw/ships_bw.jpg"
+wallpaper =  os.getenv("HOME") .. "/.config/awesome/themes/bw/ship-and-planet.jpg"
 
 if wallpaper then
     for s = 1, screen.count() do
@@ -108,7 +110,7 @@ end
 tags = {}
 for s = 1, screen.count() do
     -- Each screen has its own tag table.
-    tags[s] = awful.tag({ "web", "code", "analyze", "find", "vm",  "im", "mm" }, s, layouts[5])
+    tags[s] = awful.tag({ "web", "code", "analyze", "find", "vm",  "im", "mm", "remote" }, s, layouts[5])
 end
 -- }}}
 
@@ -119,7 +121,9 @@ myawesomemenu = {
    { "edit config", editor_cmd .. " " .. awesome.conffile },
    { "edit theme", editor_cmd .. " " .. beauty_theme },
    { "restart", awesome.restart },
-   { "quit", awesome.quit }
+   { "quit", awesome.quit },
+   { "gracefully restart", "/home/nlare/_scripts/awesome/grace_restart.sh" },
+   { "gracefully shutdown", "/home/nlare/_scripts/awesome/grace_shutdown.sh" }
 }
 
 myaudiomenu = {
@@ -129,13 +133,20 @@ myaudiomenu = {
     { "soundconverter", "soundconverter" }
 }
 
+myvideomenu = {
+    -- { "LightWorks", "lightworks" },
+    { "OpenShot", "openshot" },
+}
+
 mygamesmenu = {
-    {"xboard(chess)", "xboard" },
+    {"Steam", "urxvt -e screen sh /home/nlare/_scripts/steam_run.sh" },
+    {"xboard (chess)", "xboard" },
     {"Doom3 BFG Edition", "/home/nlare/data/games/Doom_3_BFG_Edition/RBDoom3BFG.x64" },
+    {"Heroes III", "/home/nlare/games/HoMM3/bin/vcmilauncher" },
     {"NWN", "sh /home/nlare/data/games/NeverwinterNights/nwn" },
     {"Diablo II (window)", "sh /home/nlare/data/_scripts/games/run_diablo_windowed.sh" },
     {"Diablo II (fullscr)", "sh /home/nlare/data/_scripts/games/run_diablo_fullscreen.sh" },
-    {"Quake3", "\"/home/nlare/data/games/Quake 3 Arena/quake3\"" },
+    {"Quake3", "urxvt -e \"sh /home/nlare/_scripts/run-xephyr-quake.sh\"" },
     {"winecfg", "winecfg" }
 }
 
@@ -150,6 +161,7 @@ myvmmenu = {
 
 mydevmenu = {
     { "sublime_commander", "subl3" },
+    { "Intel XDK", "/opt/intel/XDK/xdk.sh" },
     { "netbeans", "netbeans" },
     { "sqldev", "/home/nlare/_dstr/oracle/sqldeveloper/sqldeveloper.sh" },
     { "maple", "/home/nlare/maple16/bin/xmaple" },
@@ -157,10 +169,18 @@ mydevmenu = {
     { "octave-gui", "qtoctave" }
 }
 
+mygraphsmenu = {
+--    { "sublime_commander", "subl3" },
+    { "QtiPlot", "qtiplot" }
+}
+
+
 mymainmenu = awful.menu({ items = { { "awesome", myawesomemenu, beautiful.awesome_icon },
                                     { "devenv" , mydevmenu},
+                                    { "graphs" , mygraphsmenu},
                                     { "network" , mynetmenu},
                                     { "audio" , myaudiomenu},
+                                    { "video" , myvideomenu},
                                     { "games" , mygamesmenu},
 --                                    { "recordmydesktop", "gtk-recordMyDesktop" },
 --                                    { "gtypist", terminal .. " -e gtypist" },
@@ -170,7 +190,10 @@ mymainmenu = awful.menu({ items = { { "awesome", myawesomemenu, beautiful.awesom
                                     { "7zFM", "/usr/bin/7zFM" },
                                     { "ink level (Epson)", "/home/nlare/_scripts/epson_ink_level.sh" },
                                     { "ncdu (Disk Analyzer)", "urxvt -e ncdu" },
+                                    { "gtklp (Printing GUI)", "gtklp" },
                                     { "vim.tutorial", "feh /home/nlare/_img/vim_keys.jpg" },
+                                    { "mc.filetypes", "gvim /home/nlare/.config/mc/mc.ext" },
+                                    { "ClamTK", "/usr/bin/clamtk" },
                                     { "mc.filetypes", "gvim /home/nlare/.config/mc/mc.ext" },
 --                                    { "blink(alt.skype)", "blink" },
 --                                    { "ati_config", "driconf" },
@@ -190,24 +213,18 @@ menubar.utils.terminal = terminal -- Set the terminal for applications that requ
 mytextclock = awful.widget.textclock()
 
 --calendar.addCalendarToWidget(mytextclock, "<span color='green'>%s</span>")
-cpufreq_label = wibox.widget.textbox()
-cpufreq_label:set_markup("FREQ:")
-cpufreq_label:set_font("Terminus 8")
-
-cpufreq = wibox.widget.textbox()
-vicious.register(cpufreq, vicious.widgets.cpufreq, '$1', 4, "cpu0")
-
 --cores_graph_conf = {height = 18, width = 8, rounded_size = 0.3}
 cpu_graph = blingbling.line_graph()
 cpu_graph:set_height(20)
 cpu_graph:set_width(120)
-cpu_graph:set_graph_color("#FFFFFF33")
-cpu_graph:set_graph_background_border("#00000077")
+cpu_graph:set_text_color("#FFFFFF")
+cpu_graph:set_graph_color("#98989844")
+--cpu_graph:set_graph_background_border("#00000077")
 cpu_graph:set_graph_line_color("#FFFFFF")
 cpu_graph:set_show_text(true)
 cpu_graph:set_label("CPU:$percent%")
 cpu_graph:set_font("Terminus")
-cpu_graph:set_font_size(12)
+cpu_graph:set_font_size(8)
 
 blingbling.popups.htop(cpu_graph, {  
     title_color=beautiful.notify_title_color,
@@ -227,7 +244,7 @@ vicious.register(cpu_graph, vicious.widgets.cpu, '$1', 1)
 --    cores_graphs[i]:set_h_margin(1)
 --    cores_graphs[i]:set_tiles_color("#000000")
 --    cores_graphs[i]:set_background_color("#00000033")
---    cores_graphs[i]:set_graph_color("#FFFFFF33")
+--    cores_graphs[i]:set_graph_color("#98989844")
 --    cores_graphs[i]:set_graph_line_color("#ffffff")
 --  vicious.register(cores_graphs[i], vicious.widgets.cpu, "$"..(i+1).."",1)
 --end
@@ -236,13 +253,13 @@ vicious.register(cpu_graph, vicious.widgets.cpu, '$1', 1)
 mem_graph = blingbling.line_graph()
 -- Progressbar properties
 mem_graph:set_width(120)
-mem_graph:set_graph_color("#ffffff33")
+mem_graph:set_graph_color("#98989844")
 --mem_graph:set_graph_background_color("#ffffff22")
 mem_graph:set_graph_line_color("#ffffff")
 mem_graph:set_show_text(true)
 mem_graph:set_label("MEM:$percent%")
 mem_graph:set_font("Terminus")
-mem_graph:set_font_size(12)
+mem_graph:set_font_size(8)
 
 --memwidget:set_gradient_colors({ "#AECF96", "#88A175", "#FF5656" })
 -- Register widget
@@ -253,7 +270,7 @@ vicious.register(mem_graph, vicious.widgets.mem, "$1", 2)
 
 --*:draw - need to set cairo context, to do this, we must install oocairo lib (sources need latest patch) or no?
 --net_icon= wibox.widget.imagebox()
---net_icon:set_image("/home/nlare/.config/awesome/themes/nlare/icons/hardware/net-wired2.xbm")
+--net_icon:st_image("/home/nlare/.config/awesome/themes/nlare/icons/hardware/net-wired2.xbm")
 
 --mygmailimg = widget({ type = "imagebox" })
 --mygmailimg.image = image("/home/username/.config/awesome/gmail.png")
@@ -294,38 +311,68 @@ vicious.register(pacwidget, vicious.widgets.pkg,
 
 --cmus_widget = wibox.widget.textbox()
 
---vicious.register(cmus_widget, vicious.widgets.cmus,
---        function (widget, args)
---            if args["{status}"] == "Stopped" then 
---                return " - "
---            else 
---                return args["{status}"]..': '.. args["{artist}"]..' - '.. args["{title}"]..'  ###  '.. args["{genre}"]
---            end
---        end, 7)
---}}}
+--- vicious.register(cmus_widget, vicious.widgets.cmus,
+--       function (widget, args)
+--           if args["{status}"] == "Stopped" then 
+--               return " - "
+--           else 
+--               return args["{status}"]..': '.. args["{artist}"]..' - '.. args["{title}"]..'  ###  '.. args["{genre}"]
+--           end
+--       end, 7)
+---}}}
+
+cpufreq_label = wibox.widget.textbox()
+cpufreq_label:set_markup("FREQ:")
+cpufreq_label:set_font("Terminus 8")
+
+cpufreq = blingbling.value_text_box()
+cpufreq:set_text_background_color("#98989844")
+cpufreq:set_text_color("#FFFFFF")
+
+cpufreq:set_values_text_color({{"#FFFFFFff",0}, --all value > 0 will be displayed using this color
+                          {"#d4aa00ff", 0.25},
+                          {"#d45500ff",0.3}})
+
+-- cpufreq:set_default_text_color("#98989844")
+    --core1temp:set_rounded_size(0.3)
+cpufreq:set_font("Terminus")
+cpufreq:set_font_size(12)
+cpufreq:set_label("·$percent°")
+cpufreq:set_width(32)
+
+vicious.register(cpufreq, vicious.widgets.cpufreq, '$1', 4, "cpu0")
 
 temps = wibox.widget.textbox()
 temps:set_markup(" TEMP::")
 temps:set_font("Terminus 8")
 
+
 coretemp = {}
-for i=1,2 do
+for i=1,4 do
 --    if i%2 == 1 then
     coretemp[i] = blingbling.value_text_box()
-    coretemp[i]:set_text_background_color("#ffffff33")
+    coretemp[i]:set_text_background_color("#98989844")
+    coretemp[i]:set_text_color(beautiful.textbox_widget_as_label_font_color)
+	coretemp[i]:set_values_text_color({{"#FFFFFFff",0}, --all value > 0 will be displayed using this color
+                          {"#d4aa00ff", 0.45},
+                          {"#d45500ff",0.60}})
     --core1temp:set_rounded_size(0.3)
     coretemp[i]:set_font("Terminus")
     coretemp[i]:set_font_size(12)
     coretemp[i]:set_label("·$percent°")
     coretemp[i]:set_width(32)
 
-    vicious.register(coretemp[i], vicious.widgets.thermal, "$1",10 ,{"coretemp.0/hwmon/hwmon0", "core", i*2})
+    vicious.register(coretemp[i], vicious.widgets.thermal, "$1",10 ,{"coretemp.0/hwmon/hwmon0", "core", i+1})
 --    end
 end
 
 gputemp = blingbling.value_text_box()
-gputemp:set_text_background_color("#ffffff33")
+gputemp:set_text_background_color("#98989844")
 --hddtemp:set_rounded_size(0.3)
+gputemp:set_values_text_color({{"#FFFFFFff",0}, --all value > 0 will be displayed using this color
+                          {"#d4aa00ff", 0.50},
+                          {"#d45500ff",0.70}})
+
 gputemp:set_font("Terminus")
 gputemp:set_font_size(12)
 gputemp:set_label("GPU:$percent°")
@@ -342,7 +389,7 @@ iostatlabel:set_markup(" IOSTAT::")
 iostatlabel:set_font("Terminus 8")
 
 write_stat = blingbling.value_text_box()
-write_stat:set_text_background_color("#ffffff33")
+write_stat:set_text_background_color("#98989844")
 --hddtemp:set_rounded_size(0.3)
 write_stat:set_font("Terminus")
 write_stat:set_font_size(12)
@@ -356,7 +403,7 @@ end
 vicious.register(write_stat, update_ws, "$1", 10)
 
 read_stat = blingbling.value_text_box()
-read_stat:set_text_background_color("#ffffff33")
+read_stat:set_text_background_color("#98989844")
 --hddtemp:set_rounded_size(0.3)
 read_stat:set_font("Terminus")
 read_stat:set_font_size(12)
@@ -370,7 +417,11 @@ end
 vicious.register(read_stat, update_rs, "$1", 10)
 
 hddtemp = blingbling.value_text_box()
-hddtemp:set_text_background_color("#ffffff33")
+hddtemp:set_text_background_color("#98989844")
+hddtemp:set_values_text_color({{"#FFFFFFff",0}, --all value > 0 will be displayed using this color
+                          {"#d4aa00ff", 0.40},
+                          {"#d45500ff",0.50}})
+
 --hddtemp:set_rounded_size(0.3)
 hddtemp:set_font("Terminus")
 hddtemp:set_font_size(12)
@@ -393,7 +444,7 @@ vicious.register(hddtemp, vicious.widgets.hddtemp, '${/dev/sda}', 19)
 --vicious.register(ups_stat, update_ups_status, "$1", 10)
 
 --ups_input_voltage = blingbling.value_text_box()
---ups_input_voltage:set_text_background_color("#ffffff33")
+--ups_input_voltage:set_text_background_color("#98989844")
 --ups_input_voltage:set_font("Terminus")
 --ups_input_voltage:set_font_size(12)
 --ups_input_voltage:set_label("IN:$percent")
@@ -406,7 +457,7 @@ vicious.register(hddtemp, vicious.widgets.hddtemp, '${/dev/sda}', 19)
 --vicious.register(ups_input_voltage, update_ups_input_voltage, "$1", 10)
 
 --ups_output_voltage = blingbling.value_text_box()
---ups_output_voltage:set_text_background_color("#ffffff33")
+--ups_output_voltage:set_text_background_color("#98989844")
 --ups_output_voltage:set_font("Terminus")
 --ups_output_voltage:set_font_size(12)
 --ups_output_voltage:set_label("OUT:$percent")
@@ -419,7 +470,7 @@ vicious.register(hddtemp, vicious.widgets.hddtemp, '${/dev/sda}', 19)
 --vicious.register(ups_output_voltage, update_ups_output_voltage, "$1", 9)
 
 --ups_load = blingbling.value_text_box()
---ups_load:set_text_background_color("#ffffff33")
+--ups_load:set_text_background_color("#98989844")
 --ups_load:set_font("Terminus")
 --ups_load:set_font_size(12)
 --ups_load:set_label("LOAD:$percentW")
@@ -432,7 +483,7 @@ vicious.register(hddtemp, vicious.widgets.hddtemp, '${/dev/sda}', 19)
 --vicious.register(ups_load, update_ups_load, "$1", 10)
 
 --ups_temp = blingbling.value_text_box()
---ups_temp:set_text_background_color("#ffffff33")
+--ups_temp:set_text_background_color("#98989844")
 --ups_temp:set_font("Terminus")
 --ups_temp:set_font_size(12)
 --ups_temp:set_label("TEMP:$percent°")
@@ -447,10 +498,11 @@ vicious.register(hddtemp, vicious.widgets.hddtemp, '${/dev/sda}', 19)
 space_usage = wibox.widget.textbox()
 space_usage:set_markup(" SPACE::")
 space_usage:set_font("Terminus 8")
+
 --space_usage:set_font_size(12)
 
 --total_write = blingbling.value_text_box()
---total_write:set_text_background_color("#ffffff33")
+--total_write:set_text_background_color("#98989844")
 --total_write:set_rounded_size(0.3)
 --total_write:set_font("Terminus")
 --total_write:set_font_size(12)
@@ -460,8 +512,11 @@ space_usage:set_font("Terminus 8")
 --vicious.register(total_write, vicious.widgets.dio, "${sda1 total_mb}")
 
 home_dir = blingbling.value_text_box()
-home_dir:set_text_background_color("#ffffff33")
+home_dir:set_text_background_color("#98989844")
 --home_dir:set_rounded_size(0.3)
+home_dir:set_values_text_color({{"#FFFFFFff",0}, --all value > 0 will be displayed using this color
+                          {"#d4aa00ff", 0.45},
+                          {"#d45500ff",0.60}})
 home_dir:set_font("Terminus")
 home_dir:set_font_size(12)
 home_dir:set_label("/:$percentGb")
@@ -470,7 +525,11 @@ home_dir:set_width(55)
 vicious.register(home_dir, vicious.widgets.fs, "${/ avail_gb}", 19)
 
 tmp_dir = blingbling.value_text_box()
-tmp_dir:set_text_background_color("#ffffff33")
+tmp_dir:set_text_background_color("#98989844")
+tmp_dir:set_values_text_color({{"#FFFFFFff",0}, --all value > 0 will be displayed using this color
+                          {"#d4aa00ff", 0.45},
+                          {"#d45500ff",0.60}})
+
 --tmp_dir:set_rounded_size(0.3)
 tmp_dir:set_font("Terminus")
 tmp_dir:set_font_size(12)
@@ -549,7 +608,7 @@ wan_ip = wibox.widget.textbox()
 wan_ip:set_font("Terminus 8")
 
 --wan_ip = blingbling.value_text_box()
---wan_ip:set_text_background_color("#ffffff33")
+--wan_ip:set_text_background_color("#98989844")
 --wan_ip:set_rounded_size(0.3)
 --wan_ip:set_font("Terminus")
 --wan_ip:set_font_size(12)
@@ -561,16 +620,16 @@ vicious.register(wan_ip, update_wan_ip, "$1",10)
 netwidget = blingbling.net({interface = "eno1", show_text = true})
 --netwidget:set_ippopup()
 netwidget:set_graph_color("#ffffff99")
-netwidget:set_graph_line_color("#ffffff33")
+netwidget:set_graph_line_color("#98989844")
 netwidget:set_font("Terminus")
-netwidget:set_font_size("12")
+netwidget:set_font_size("8")
 
 
 --netssid = wibox.widget.textbox()
 --vicious.register(netssid, vicious.widgets.wifi, "${ssid} ", 3, "wlan0")
 
 --netu = blingbling.value_text_box()
---netu:set_text_background_color("#ffffff33")
+--netu:set_text_background_color("#98989844")
 --netu:set_rounded_size(0.3)
 --netu:set_font_size(10)
 --netu:set_label("↑ $percent")
@@ -581,7 +640,7 @@ netwidget:set_font_size("12")
 --vicious.register(netwidget, vicious.widgets.net,'${enp2s0 up_kb}', 1)
 
 --netd = blingbling.value_text_box()
---netd:set_text_background_color("#ffffff33")
+--netd:set_text_background_color("#98989844")
 --netd:set_rounded_size(0.3)
 --netd:set_font_size(10)
 --netd:set_label("↓ $percent")
@@ -720,12 +779,12 @@ for s = 1, screen.count() do
 --    left_graph:add(netu)
 --    left_graph:add(netd)
 	
---	left_graph:add(cpufreq_label)
---	left_graph:add(cpufreq)
+	left_graph:add(cpufreq_label)
+	left_graph:add(cpufreq)
 
     left_graph:add(temps)
 
-    for i=1,2 do
+    for i=1,4 do
 --        if i%2 == 1 then
             left_graph:add(coretemp[i])
 --        end
@@ -826,6 +885,8 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey, "Shift"   }, "k", function () awful.client.swap.byidx( -1)    end),
     awful.key({ modkey, "Control" }, "j", function () awful.screen.focus_relative( 1) end),
     awful.key({ modkey, "Control" }, "k", function () awful.screen.focus_relative(-1) end),
+    awful.key({ modkey, "Shift"   }, "Left", function () awful.screen.focus_relative( 1) end),
+    awful.key({ modkey, "Shift"   }, "Right", function () awful.screen.focus_relative(-1) end),
     awful.key({ modkey,           }, "u", awful.client.urgent.jumpto),
     awful.key({ modkey,           }, "Tab",
         function ()
@@ -844,13 +905,14 @@ globalkeys = awful.util.table.join(
 
     awful.key({ modkey,           }, "grave", function () awful.util.spawn_with_shell("urxvt -e canto -u") end),
 --    awful.key({ modkey,           }, "m", function () awful.util.spawn_with_shell("sudo umount /media/*") end),i
-    awful.key({ modkey,           }, "m", function () awful.util.spawn_with_shell("devmon --unmount-removable") end),
+    awful.key({ modkey, "Shift"	  }, "u", function () awful.util.spawn_with_shell("urxvt -e devmon --unmount-removable") end),
     awful.key({ modkey,           }, "KP_Subtract", function () awful.util.spawn("amixer sset Master 5-") end),
     awful.key({ modkey,           }, "KP_Add", function () awful.util.spawn("amixer sset Master 5+") end),
     awful.key({                   }, "XF86AudioPlay", function () awful.util.spawn("cmus-remote -u") end),
     awful.key({                   }, "XF86AudioStop", function () awful.util.spawn("cmus-remote -s") end),
     awful.key({                   }, "XF86AudioNext", function () awful.util.spawn("cmus-remote -n") end),
     awful.key({                   }, "XF86AudioPrev", function () awful.util.spawn("cmus-remote -r") end),
+--    awful.key({ modkey,  "Shift"  }, "m", function () awful.util.spawn("xset dpms force off") end),
 --    awful.key({                   }, "XF86AudioRaiseVolume", function () awful.util.spawn("amixer set Headphone 2+") end),
 --    awful.key({                   }, "XF86AudioLowerVolume", function () awful.util.spawn("amixer set Headphone 2-") end),
 --    awful.key({                   }, "XF86AudioMute", function () awful.util.spawn("amixer set Master toggle") end),
@@ -859,20 +921,28 @@ globalkeys = awful.util.table.join(
     awful.key({                   }, "XF86AudioMute", function () awful.util.spawn("pulseaudio-ctl mute") end),
     awful.key({                   }, "XF86Sleep", function () awful.util.spawn("sudo systemctl suspend") end),
     awful.key({	"Shift",          }, "XF86Sleep", function () awful.util.spawn("sudo systemctl hibernate") end),
+    awful.key({		              }, "Print", function () awful.util.spawn("scrot -u -e 'mv $f ~/screenshots/$n'") end),
     awful.key({                   }, "XF86Tools", 
     function ()
 --         local screen = mouse.screen
 	     local curtag = tags[2][7]
 		 awful.tag.viewonly(curtag)
-         run_once("cmus")
+--         run_once("screen -S cmus-session /usr/bin/cmus")
          --.maximized = true
     end),
     awful.key({ modkey,           }, "m",
     function () 
-        local curtag = tags[2][7]
-        awful.tag.viewonly(curtag)
-        awful.util.spawn_with_shell("urxvt -e cmus") 
+--        local curtag = tags[2][7]
+--        awful.tag.viewonly(curtag)
+        awful.util.spawn_with_shell("urxvt -e /usr/bin/cmus") 
     end),
+    awful.key({ modkey, "Shift"    }, "m",
+    function () 
+--        local curtag = tags[2][7]
+--        awful.tag.viewonly(curtag)
+        awful.util.spawn_with_shell("urxvt -e screen -r cmus-session") 
+    end),
+
 	awful.key({ modkey,           }, "s",
     function () 
         local curtag = tags[2][2]
@@ -880,17 +950,18 @@ globalkeys = awful.util.table.join(
         awful.util.spawn_with_shell("subl3'") 
     end),
     awful.key({ modkey,           }, "b", function () awful.util.spawn("chromium") end),
-    awful.key({ modkey,  "Shift"  }, "b", function () awful.util.spawn("luakit") end),
+    awful.key({ modkey,  "Shift"  }, "b", function () awful.util.spawn("chromium --user-data-dir=/home/nlare/_adm/browser/chrome/data_dir/ --incognito") end),
     awful.key({ modkey,           }, "f", function () awful.util.spawn_with_shell("urxvt -e mc") end),
     awful.key({ modkey,  "Shift"  }, "f", function () awful.util.spawn_with_shell("doublecmd") end),
-    awful.key({ modkey,  "Shift"  }, "a", function () awful.util.spawn_with_shell("file-roller") end),
+    awful.key({ modkey,  "Shift"  }, "a", function () awful.util.spawn_with_shell("xrandr --auto") end),
     awful.key({ modkey,           }, "d", function () awful.util.spawn("urxvt -e sdcv") end),
+    awful.key({ modkey,    		  }, "r", function () awful.util.spawn("urxvt -e canto-curses") end),
     awful.key({ modkey,           }, "g", function () awful.util.spawn("gvim") end),
     awful.key({ modkey,  "Shift"  }, "g", function () awful.util.spawn_with_shell("subl3") end),
     awful.key({ modkey,  		  }, "a", function () awful.util.spawn_with_shell("urxvt -e anamnesis -b") end),
     awful.key({ "Control",        }, "Escape", function () awful.util.spawn("urxvt -e sudo wifi-menu") end),
-    awful.key({ modkey,   "Shift"     }, "i", function () awful.util.spawn("apulse32 skype") end),
-    awful.key({ modkey,    }, "i", function () awful.util.spawn("utox") end),
+    awful.key({ modkey,   "Shift"     }, "i", function () awful.util.spawn("skype") end),
+    awful.key({ modkey,    		  }, "i", function () awful.util.spawn("urxvt -e screen -S irssi /usr/bin/irssi") end),
 --    awful.key({ modkey,    }, "i", function () awful.util.spawn(terminal .. " -e toxic") end),
         -- Escape from keyboard focus trap (eg Flash plugin in Firefox)
     awful.key({ modkey, "Control" }, "Escape", function ()
@@ -958,34 +1029,81 @@ end
 -- Bind all key numbers to tags.
 -- Be careful: we use keycodes to make it works on any keyboard layout.
 -- This should map on the top row of your keyboard, usually 1 to 9.
-for i = 1, keynumber do
+-- for i = 1, keynumber do
+--     globalkeys = awful.util.table.join(globalkeys,
+--         awful.key({ modkey }, "#" .. i + 9,
+--                   function ()
+--                         local screen = mouse.screen
+--                         if tags[screen][i] then
+--                             awful.tag.viewonly(tags[screen][i])
+--                         end
+--                   end),
+--         awful.key({ modkey, "Control" }, "#" .. i + 9,
+--                   function ()
+--                       local screen = mouse.screen
+--                       if tags[screen][i] then
+--                           awful.tag.viewtoggle(tags[screen][i])
+--                       end
+--                   end),
+--         awful.key({ modkey, "Shift" }, "#" .. i + 9,
+--                   function ()
+--                       if client.focus and tags[client.focus.screen][i] then
+--                           awful.client.movetotag(tags[client.focus.screen][i])
+--                       end
+--                   end),
+--         awful.key({ modkey, "Control", "Shift" }, "#" .. i + 9,
+--                   function ()
+--                       if client.focus and tags[client.focus.screen][i] then
+--                           awful.client.toggletag(tags[client.focus.screen][i])
+--                       end
+--                   end))
+-- end
+
+for i = 1, 9 do
     globalkeys = awful.util.table.join(globalkeys,
+        -- View tag only.
         awful.key({ modkey }, "#" .. i + 9,
                   function ()
-                        local screen = mouse.screen
-                        if tags[screen][i] then
-                            awful.tag.viewonly(tags[screen][i])
+                        local screen = awful.screen.focused()
+                        local tag = screen.tags[i]
+                        if tag then
+                           tag:view_only()
                         end
-                  end),
+                  end,
+                  {description = "view tag #"..i, group = "tag"}),
+        -- Toggle tag.
         awful.key({ modkey, "Control" }, "#" .. i + 9,
                   function ()
-                      local screen = mouse.screen
-                      if tags[screen][i] then
-                          awful.tag.viewtoggle(tags[screen][i])
+                      local screen = awful.screen.focused()
+                      local tag = screen.tags[i]
+                      if tag then
+                         awful.tag.viewtoggle(tag)
                       end
-                  end),
+                  end,
+                  {description = "toggle tag #" .. i, group = "tag"}),
+        -- Move client to tag.
         awful.key({ modkey, "Shift" }, "#" .. i + 9,
                   function ()
-                      if client.focus and tags[client.focus.screen][i] then
-                          awful.client.movetotag(tags[client.focus.screen][i])
-                      end
-                  end),
+                      if client.focus then
+                          local tag = client.focus.screen.tags[i]
+                          if tag then
+                              client.focus:move_to_tag(tag)
+                          end
+                     end
+                  end,
+                  {description = "move focused client to tag #"..i, group = "tag"}),
+        -- Toggle tag on focused client.
         awful.key({ modkey, "Control", "Shift" }, "#" .. i + 9,
                   function ()
-                      if client.focus and tags[client.focus.screen][i] then
-                          awful.client.toggletag(tags[client.focus.screen][i])
+                      if client.focus then
+                          local tag = client.focus.screen.tags[i]
+                          if tag then
+                              client.focus:toggle_tag(tag)
+                          end
                       end
-                  end))
+                  end,
+                  {description = "toggle focused client on tag #" .. i, group = "tag"})
+    )
 end
 
 clientbuttons = awful.util.table.join(
@@ -1001,15 +1119,21 @@ root.keys(globalkeys)
 awful.rules.rules = {
     -- All clients will match this rule.
     { rule = { },
+--      properties = { border_width = beautiful.border_width,
+--                     border_color = beautiful.border_normal,
+--                     focus = awful.client.focus.filter,
+--                     keys = clientkeys,
+--                     buttons = clientbuttons } },
       properties = { border_width = beautiful.border_width,
                      border_color = beautiful.border_normal,
                      focus = awful.client.focus.filter,
+                     raise = true,
                      keys = clientkeys,
-                     buttons = clientbuttons } },
+                     buttons = clientbuttons } },		
     { rule = { class = "MPlayer" },
       properties = { floating = true }, tag = tags[2][7] },
 	{ rule = { class = "Vlc" },
-      properties = { floating = false }, tag = tags[2][7] }, 
+      properties = { maximaze = true }, tag = tags[2][7] }, 
     { rule = { class = "skype" },
       properties = { floating = true, tag = tags[2][6] } },
 	{ rule = { name = "uTox" },
@@ -1023,8 +1147,8 @@ awful.rules.rules = {
     { rule = { class = "gimp" },
       properties = { floating = true } },
     -- Set Firefox to always map on tags number 2 of screen 1.
-    { rule = { class = "Chromium" },
-      properties = { floating = false, tag = tags[2][1] } },
+    { rule = { class = "chromium" },
+      properties = { maximaze = true, floating = false, tag = tags[2][1] } },
 	{ rule = { instance = "exe" },
       properties = { floating = true } },
     { rule = { instance = "plugin-container" },
@@ -1041,8 +1165,25 @@ awful.rules.rules = {
       properties = { floating = true, tag = tags[1][2]} },
 	{ rule = { class = "Zathura" },
       properties = { floating = false, tag = tags[1][3]} },
---	{ rule = { class = "Zathura" },
---      properties = { floating = false, tag = tags[2][3]} },
+	{ rule = { class = "VirtualBox" },
+      properties = { tag = tags[1][5]},
+	  callback = awful.client.setslave,
+      properties =	{ tag = tags[1][5] }
+  	},
+	{ rule = { name = "Oracle VM VirtualBox Manager" },
+      properties = { floating = true, tag = tags[1][5]},
+  	},
+	{ rule = { instance = "vboxinstance" },
+      properties = { tag = tags[1][5]},
+	  callback = awful.client.setslave,
+      properties =	{ tag = tags[1][5] }
+  	},
+--	{ rule = { name = "Oracle VM VirtualBox Менеджер" },
+--     properties = { floating = false, tag = tags[1][5]} },
+--	{ rule = { name = "Oracle VM VirtualBox Manager" },
+--      properties = { floating = false, tag = tags[1][5]} },
+--	{ rule = { name = "Oracle VM VirtualBox Менеджер" },
+--      properties = { maximaze = false, tag = tags[1][5]} },
 	{ rule = { class = "Gifview" },
       properties = { floating = true } },
 	{ rule = { class = "lxappearance" },
@@ -1058,7 +1199,26 @@ awful.rules.rules = {
       				 focusable = false } },
 	{ rule = { name = "Save File" },
       properties = { floating = false } },
-
+	{ rule = { class = "Clamtk" },
+      properties = { floating = true } },
+	{ rule = { class = "Tkabber" },
+      properties = { floating = false, tag = tags[1][6] } },
+	{ rule = { class = "Toplevel" },
+      properties = { floating = false, tag = tags[1][6] } },
+	{ rule = { class = "xfreerdp" },
+      properties = { floating = false, tag = tags[1][5] } },
+	{ rule = { class = "Pidgin" },
+      properties = { floating = false, tag = tags[1][6] } },
+    { rule = { instance = "crx_knipolnnllmklapflnccelgolnpehhpl" },
+	  properties = { floating = false, tag = tags[1][6] } },
+    { rule = { instance = "crx_nckgahadagoaajjgafhacjanaoiihapd" },
+	  properties = { floating = false, tag = tags[1][6] } },
+    { rule = { class = "jetbrains-studio" },
+      properties = { floating = false, maximaze = true, tag = tags[2][2] } },
+    { rule = { class = "sun-awt-X11-XDialogPeer" },
+      properties = { floating = false, maximaze = true, tag = tags[2][2] } },
+    { rule = { class = "Subl3" },
+      properties = { floating = true, tag = tags[2][2] } },
 }
 -- }}}
 
@@ -1134,17 +1294,24 @@ client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_n
 --ftp_mount = os.getenv("HOME") .. "/_scripts/ftp_mount.sh"
 --awful.util.spawn_with_shell(ftp_mount)
 --run_once("cairo-compmgr")
-run_once("devmon")
-run_once("sbxkb")
+run_once("wmname LG3D")
+run_once("kbdd")
+--run_once("devmon")
 run_once("yeahconsole")
 run_once("anamnesis --start")
+run_once("notify-listener")
+--run_once("pulseaudio --start")
 --run_once("firefox")
-run_once("wmname LG3D")
-run_once("dropbox")
---run_once("conky -c ~/conky/.conkyrc")
+--run_once("dropbox")
 --run_once("udiskie --tray")
 --run_once("utox")
-run_once("/home/nlare/_scripts/hdd_stop.sh /dev/sdb")
+awful.util.spawn_with_shell("/home/nlare/_scripts/hdd_stop.sh /dev/sdb")
+awful.util.spawn_with_shell("/home/nlare/_scripts/hdd_stop.sh /dev/sdc")
+awful.util.spawn_with_shell("/home/nlare/_scripts/alsa/enable_spdif.sh")
+awful.util.spawn_with_shell("tmux new-session -s conky-windows -d /home/nlare/conky/conky-run.sh")
+awful.util.spawn_with_shell("/usr/bin/xautolock -time 30 -locker /usr/local/bin/i3lock-full-command -detectsleep")
+--awful.util.spawn_with_shell("dropbox-cli start")
+--awful.util.spawn_with_shell("tmux new-session -s sbxkb-proc -d sbxkb")
 --run_once("~/_scripts/apc/apc_status.sh")
 --run_once("~/_scripts/apc/apc_linev.sh")
 --run_once("~/_scripts/apc/apc_outputv.sh")
