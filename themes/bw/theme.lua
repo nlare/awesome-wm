@@ -7,19 +7,25 @@ theme = {}
 theme.font          = "Terminus 8"
 
 theme.bg_normal     = "#12121233"
-theme.bg_focus      = "#ffffff44"
+--theme.bg_normal     = "#000000"
+--theme.bg_focus      = "#ffffff44"
+theme.bg_focus      = "#222222"
+--theme.bg_urgent     = "#ecedee"
 theme.bg_urgent     = "#ecedee"
 theme.bg_minimize   = "#cccccc"
 
 theme.fg_normal     = "#ededee"
-theme.fg_focus      = "#ffffff"
-theme.fg_urgent     = "#ff0000"
+--theme.fg_normal     = "#000000"
+--theme.fg_normal     = "#2E64FE"
+theme.fg_focus      = "#dedede"
+theme.fg_urgent     = "#000000"
 theme.fg_minimize   = "#ffffff"
 
 theme.border_width  = "2.5"
 theme.border_normal = "#000000"
 theme.border_focus  = "#212121"
 theme.border_marked = "#91231c"
+--theme.border_marked = "#212121"
 
 
 -- There are other variable sets
